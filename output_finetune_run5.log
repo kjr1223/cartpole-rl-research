@@ -1,0 +1,53 @@
+=======================================================
+180도 PINN 파인튜닝 (curriculum_marking.pth 기반)
+=======================================================
+
+[1] SAC only (파인튜닝)
+  모델 불러옴: curriculum_marking.pth
+
+  180도 파인튜닝 (500에피소드)
+  PINN: False | Context: False
+  IMAGINARY_K: 10
+  ep=100 | 전환성공률=19.0%/100
+  ep=200 | 전환성공률=1.0%/100
+  ep=300 | 전환성공률=0.0%/100
+  ep=400 | 전환성공률=0.0%/100
+  ep=500 | 전환성공률=0.0%/100
+  → 최종 성공률: 0.0% | 저장: pinn_180_finetune_sac.pth
+
+[2] PINN + SAC (파인튜닝)
+  모델 불러옴: curriculum_marking.pth
+  PINN 로드 완료!
+
+  180도 파인튜닝 (500에피소드)
+  PINN: True | Context: False
+  IMAGINARY_K: 10
+  ep=100 | 전환성공률=24.0%/100
+  ep=200 | 전환성공률=23.0%/100
+  ep=300 | 전환성공률=2.0%/100
+  ep=400 | 전환성공률=0.0%/100
+  ep=500 | 전환성공률=0.0%/100
+  → 최종 성공률: 0.0% | 저장: pinn_180_finetune_pinn_sac.pth
+
+[3] PINN + Context + SAC (파인튜닝)
+  모델 불러옴: curriculum_marking.pth
+  Context DB: 22개 로드
+  PINN 로드 완료!
+
+  180도 파인튜닝 (500에피소드)
+  PINN: True | Context: True
+  IMAGINARY_K: 10
+  ep=100 | 전환성공률=5.0%/100
+  ep=200 | 전환성공률=0.0%/100
+  ep=300 | 전환성공률=0.0%/100
+  ep=400 | 전환성공률=0.0%/100
+  ep=500 | 전환성공률=0.0%/100
+  → 최종 성공률: 0.0% | 저장: pinn_180_finetune_pinn_ctx.pth
+
+그래프 저장: pinn_180_result.png
+
+===== 최종 요약 =====
+SAC only:          0.0%
+PINN + SAC:        0.0%
+PINN + CTX + SAC:  0.0%
+이전 최고 성능:     59.3% (curriculum_marking)

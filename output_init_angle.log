@@ -1,0 +1,239 @@
+/home/jrkim/cartpole_env/lib/python3.12/site-packages/pygame/pkgdata.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_stream, resource_exists
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 52488 (\N{HANGUL SYLLABLE CO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44033 (\N{HANGUL SYLLABLE GAG}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 46020 (\N{HANGUL SYLLABLE DO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 51312 (\N{HANGUL SYLLABLE JO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44148 (\N{HANGUL SYLLABLE GEON}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 48324 (\N{HANGUL SYLLABLE BYEOL}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 49457 (\N{HANGUL SYLLABLE SEONG}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44277 (\N{HANGUL SYLLABLE GONG}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 47456 (\N{HANGUL SYLLABLE RYUL}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 48708 (\N{HANGUL SYLLABLE BI}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44368 (\N{HANGUL SYLLABLE GYO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 51649 (\N{HANGUL SYLLABLE JIG}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 47549 (\N{HANGUL SYLLABLE RIB}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44540 (\N{HANGUL SYLLABLE GEUN}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 52376 (\N{HANGUL SYLLABLE CEO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 51473 (\N{HANGUL SYLLABLE JUNG}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 44036 (\N{HANGUL SYLLABLE GAN}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 50640 (\N{HANGUL SYLLABLE E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 45320 (\N{HANGUL SYLLABLE NEO}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 51648 (\N{HANGUL SYLLABLE JI}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 50630 (\N{HANGUL SYLLABLE EOBS}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:108: UserWarning: Glyph 51020 (\N{HANGUL SYLLABLE EUM}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 52488 (\N{HANGUL SYLLABLE CO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44033 (\N{HANGUL SYLLABLE GAG}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 46020 (\N{HANGUL SYLLABLE DO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 51312 (\N{HANGUL SYLLABLE JO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44148 (\N{HANGUL SYLLABLE GEON}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 48324 (\N{HANGUL SYLLABLE BYEOL}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 49457 (\N{HANGUL SYLLABLE SEONG}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44277 (\N{HANGUL SYLLABLE GONG}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 47456 (\N{HANGUL SYLLABLE RYUL}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 48708 (\N{HANGUL SYLLABLE BI}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44368 (\N{HANGUL SYLLABLE GYO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 51649 (\N{HANGUL SYLLABLE JIG}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 47549 (\N{HANGUL SYLLABLE RIB}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44540 (\N{HANGUL SYLLABLE GEUN}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 52376 (\N{HANGUL SYLLABLE CEO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 51473 (\N{HANGUL SYLLABLE JUNG}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 44036 (\N{HANGUL SYLLABLE GAN}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 50640 (\N{HANGUL SYLLABLE E}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 45320 (\N{HANGUL SYLLABLE NEO}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 51648 (\N{HANGUL SYLLABLE JI}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 50630 (\N{HANGUL SYLLABLE EOBS}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+/home/jrkim/cartpole_project/run_init_angle_exp.py:109: UserWarning: Glyph 51020 (\N{HANGUL SYLLABLE EUM}) missing from font(s) DejaVu Sans.
+  plt.savefig('init_angle_comparison.png', dpi=150)
+
+==================================================
+초기 시작 각도: 0도
+==================================================
+마킹 데이터 34개 불러옴
+PINN 모델 로드 완료
+
+[45도 단계] 500에피소드 학습 시작...
+
+  [시작각도=45도] 500에피소드 학습...
+    ep=100 | 전환성공률=39%/100
+    ep=200 | 전환성공률=0%/100
+    ep=300 | 전환성공률=3%/100
+    ep=400 | 전환성공률=55%/100
+    ep=500 | 전환성공률=82%/100
+  → 저장: stage_45_init0.pth
+  → 최종 전환성공률: 35.8%
+  [45도 단계 완료] 성공률=35.8%
+
+[90도 단계] 1000에피소드 학습 시작...
+
+  [시작각도=90도] 1000에피소드 학습...
+    ep=100 | 전환성공률=100%/100
+    ep=200 | 전환성공률=100%/100
+    ep=300 | 전환성공률=100%/100
+    ep=400 | 전환성공률=100%/100
+    ep=500 | 전환성공률=100%/100
+    ep=600 | 전환성공률=98%/100
+    ep=700 | 전환성공률=73%/100
+    ep=800 | 전환성공률=16%/100
+    ep=900 | 전환성공률=10%/100
+    ep=1000 | 전환성공률=18%/100
+  → 저장: stage_90_init0.pth
+  → 최종 전환성공률: 71.5%
+  [90도 단계 완료] 성공률=71.5%
+
+[135도 단계] 700에피소드 학습 시작...
+
+  [시작각도=135도] 700에피소드 학습...
+    ep=100 | 전환성공률=1%/100
+    ep=200 | 전환성공률=2%/100
+    ep=300 | 전환성공률=15%/100
+    ep=400 | 전환성공률=40%/100
+    ep=500 | 전환성공률=47%/100
+    ep=600 | 전환성공률=55%/100
+    ep=700 | 전환성공률=65%/100
+  → 저장: stage_135_init0.pth
+  → 최종 전환성공률: 32.1%
+  [135도 단계 완료] 성공률=32.1%
+
+[180도 단계] 1000에피소드 학습 시작...
+
+  [시작각도=180도] 1000에피소드 학습...
+    ep=100 | 전환성공률=100%/100
+    ep=200 | 전환성공률=100%/100
+    ep=300 | 전환성공률=100%/100
+    ep=400 | 전환성공률=100%/100
+    ep=500 | 전환성공률=100%/100
+    ep=600 | 전환성공률=100%/100
+    ep=700 | 전환성공률=100%/100
+    ep=800 | 전환성공률=100%/100
+    ep=900 | 전환성공률=100%/100
+    ep=1000 | 전환성공률=100%/100
+  → 저장: stage_180_init0.pth
+  → 최종 전환성공률: 100.0%
+  [180도 단계 완료] 성공률=100.0%
+
+최종 저장: curriculum_init0.pth
+
+>>> 초기각도 0도 → 최종 성공률: 100.0%
+
+==================================================
+초기 시작 각도: 135도
+==================================================
+마킹 데이터 34개 불러옴
+PINN 모델 로드 완료
+
+[135도 단계] 700에피소드 학습 시작...
+
+  [시작각도=135도] 700에피소드 학습...
+    ep=100 | 전환성공률=35%/100
+    ep=200 | 전환성공률=53%/100
+    ep=300 | 전환성공률=5%/100
+    ep=400 | 전환성공률=3%/100
+    ep=500 | 전환성공률=8%/100
+    ep=600 | 전환성공률=8%/100
+    ep=700 | 전환성공률=78%/100
+  → 저장: stage_135_init135.pth
+  → 최종 전환성공률: 27.1%
+  [135도 단계 완료] 성공률=27.1%
+
+[180도 단계] 1000에피소드 학습 시작...
+
+  [시작각도=180도] 1000에피소드 학습...
+    ep=100 | 전환성공률=72%/100
+    ep=200 | 전환성공률=98%/100
+    ep=300 | 전환성공률=100%/100
+    ep=400 | 전환성공률=86%/100
+    ep=500 | 전환성공률=14%/100
+    ep=600 | 전환성공률=61%/100
+    ep=700 | 전환성공률=75%/100
+    ep=800 | 전환성공률=100%/100
+    ep=900 | 전환성공률=100%/100
+    ep=1000 | 전환성공률=89%/100
+  → 저장: stage_180_init135.pth
+  → 최종 전환성공률: 79.5%
+  [180도 단계 완료] 성공률=79.5%
+
+최종 저장: curriculum_init135.pth
+
+>>> 초기각도 135도 → 최종 성공률: 79.5%
+
+==================================================
+초기 시작 각도: 180도
+==================================================
+마킹 데이터 34개 불러옴
+PINN 모델 로드 완료
+
+[180도 단계] 1000에피소드 학습 시작...
+
+  [시작각도=180도] 1000에피소드 학습...
+    ep=100 | 전환성공률=0%/100
+    ep=200 | 전환성공률=1%/100
+    ep=300 | 전환성공률=0%/100
+    ep=400 | 전환성공률=0%/100
+    ep=500 | 전환성공률=0%/100
+    ep=600 | 전환성공률=0%/100
+    ep=700 | 전환성공률=0%/100
+    ep=800 | 전환성공률=0%/100
+    ep=900 | 전환성공률=0%/100
+    ep=1000 | 전환성공률=0%/100
+  → 저장: stage_180_init180.pth
+  → 최종 전환성공률: 0.1%
+  [180도 단계 완료] 성공률=0.1%
+
+최종 저장: curriculum_init180.pth
+
+>>> 초기각도 180도 → 최종 성공률: 0.1%
+
+===== 최종 요약 =====
+종말 조건 근처(0도)              → 최종 성공률: 100.0%
+중간 에너지(135도)              → 최종 성공률: 79.5%
+에너지 없음(180도)              → 최종 성공률: 0.1%
+
+그래프 저장: init_angle_comparison.png

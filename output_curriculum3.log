@@ -1,0 +1,113 @@
+nohup: ignoring input
+/home/jrkim/cartpole_env/lib/python3.12/site-packages/pygame/pkgdata.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_stream, resource_exists
+
+==================================================
+PINN + Curriculum + Context DB 비교 실험
+==================================================
+
+[1] 기본 SAC
+
+========================================
+=== 기본 SAC Curriculum Learning ===
+========================================
+
+[1단계] stage_45_baseline_base.pth 불러옴 → 건너뜀
+
+[2단계] stage_90_baseline_base.pth 불러옴 → 건너뜀
+
+[3단계] stage_135_baseline_base.pth 불러옴 → 건너뜀
+
+[4단계] stage_180_baseline_base.pth 불러옴 → 건너뜀
+
+최종 저장: curriculum_baseline_base.pth
+
+[2] PINN + SAC
+PINN 모델 로드 완료
+
+========================================
+=== 기본 SAC Curriculum Learning ===
+========================================
+
+[1단계] stage_45_baseline_pinn.pth 불러옴 → 건너뜀
+
+[2단계] stage_90_baseline_pinn.pth 불러옴 → 건너뜀
+
+[3단계] stage_135_baseline_pinn.pth 불러옴 → 건너뜀
+
+[4단계] stage_180_baseline_pinn.pth 불러옴 → 건너뜀
+
+최종 저장: curriculum_baseline_pinn.pth
+
+[3] PINN + Context + SAC
+마킹 데이터 22개 불러옴
+PINN 모델 로드 완료
+
+========================================
+=== 마킹 SAC Curriculum Learning ===
+========================================
+
+[1단계] 시작각도=45도 | 500에피소드
+
+  [시작각도=45도] 500에피소드 학습...
+    ep=100 | 전환성공률=11%/100
+    ep=200 | 전환성공률=4%/100
+    ep=300 | 전환성공률=1%/100
+    ep=400 | 전환성공률=10%/100
+    ep=500 | 전환성공률=2%/100
+  → 저장: stage_45_marking_pinn_ctx.pth
+  → 최종 전환성공률: 5.6%
+  [1단계 완료] 성공률=5.6%
+
+[2단계] 시작각도=90도 | 1000에피소드
+
+  [시작각도=90도] 1000에피소드 학습...
+    ep=100 | 전환성공률=55%/100
+    ep=200 | 전환성공률=99%/100
+    ep=300 | 전환성공률=96%/100
+    ep=400 | 전환성공률=98%/100
+    ep=500 | 전환성공률=98%/100
+    ep=600 | 전환성공률=100%/100
+    ep=700 | 전환성공률=100%/100
+    ep=800 | 전환성공률=97%/100
+    ep=900 | 전환성공률=55%/100
+    ep=1000 | 전환성공률=97%/100
+  → 저장: stage_90_marking_pinn_ctx.pth
+  → 최종 전환성공률: 89.5%
+  [2단계 완료] 성공률=89.5%
+
+[3단계] stage_135_marking_pinn_ctx.pth 불러옴 → 건너뜀
+
+[4단계] stage_180_marking_pinn_ctx.pth 불러옴 → 건너뜀
+
+최종 저장: curriculum_marking_pinn_ctx.pth
+/home/jrkim/cartpole_project/curriculum_pinn.py:520: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/curriculum_pinn.py:520: UserWarning: Glyph 48376 (\N{HANGUL SYLLABLE BON}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/curriculum_pinn.py:521: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
+  plt.savefig('/home/jrkim/cartpole_project/pinn_curriculum_comparison.png',
+/home/jrkim/cartpole_project/curriculum_pinn.py:521: UserWarning: Glyph 48376 (\N{HANGUL SYLLABLE BON}) missing from font(s) DejaVu Sans.
+  plt.savefig('/home/jrkim/cartpole_project/pinn_curriculum_comparison.png',
+
+그래프 저장: pinn_curriculum_comparison.png
+
+===== 최종 요약 =====
+                                    4단계 성공률      전체 전환
+SAC 기본                                 0.0%          0회
+PINN + SAC                             0.0%          0회
+PINN + Context + SAC                   0.0%        923회
+tpole_project/curriculum_pinn.py:520: UserWarning: Glyph 48376 (\N{HANGUL SYLLABLE BON}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/jrkim/cartpole_project/curriculum_pinn.py:521: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
+  plt.savefig('/home/jrkim/cartpole_project/pinn_curriculum_comparison.png',
+/home/jrkim/cartpole_project/curriculum_pinn.py:521: UserWarning: Glyph 48376 (\N{HANGUL SYLLABLE BON}) missing from font(s) DejaVu Sans.
+  plt.savefig('/home/jrkim/cartpole_project/pinn_curriculum_comparison.png',
+
+그래프 저장: pinn_curriculum_comparison.png
+
+===== 최종 요약 =====
+                                    4단계 성공률      전체 전환
+SAC 기본                                 0.0%          0회
+PINN + SAC                             0.0%          0회
+PINN + Context + SAC                   2.1%        232회
