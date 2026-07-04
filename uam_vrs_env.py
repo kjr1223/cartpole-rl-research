@@ -174,9 +174,26 @@ class VRSEnv(gym.Env):
         self.step_count += 1
 
         # ----------------------
+        # 4. Sanity check: NaN/inf 및 물리적 이상값 감지
+        # ----------------------
+        v_i_new, v_h_new = self._compute_vi(V_z_new, T_norm_new)
+        state_ok = bool(np.all(np.isfinite(self.state)))
+        vi_ok    = np.isfinite(v_i_new) and v_i_new >= 0.0
+        vh_ok    = np.isfinite(v_h_new) and v_h_new >= 0.0
+
+        if not (state_ok and vi_ok and vh_ok):
+            print(f"[ANOMALY] ep_step={self.step_count} | "
+                  f"state={self.state} | v_i={v_i_new:.4f} | v_h={v_h_new:.4f}")
+            self.state = np.zeros(4, dtype=np.float32)
+            return (self.state, -100.0, True, False,
+                    {"anomaly": True, "v_i": v_i_new, "v_h": v_h_new,
+                     "vrs_ratio": float('nan'), "zone": "ANOMALY",
+                     "step": self.step_count})
+
+        # ----------------------
         # 5. VRS 비율 계산
         # ----------------------
-        vrs_ratio = self._vrs_ratio(V_z_new, T_norm_new)
+        vrs_ratio = V_z_new / v_h_new if v_h_new > 0.0 else 999.0
         zone_new  = self._ontology(V_z_new, T_norm_new)
 
         # ----------------------
@@ -198,6 +215,8 @@ class VRSEnv(gym.Env):
             "vrs_ratio" : vrs_ratio,
             "zone"      : zone_new,
             "step"      : self.step_count,
+            "v_i"       : v_i_new,
+            "v_h"       : v_h_new,
         }
 
         return self.state, reward, terminated, truncated, info
@@ -221,19 +240,64 @@ class VRSEnv(gym.Env):
         ]
 
     # =============================================
+    # _compute_vi(): 유도속도(v_i) 계산
+    # x = V_c/v_h (상승 양수, 하강 음수) 구간별로 다른 공식 사용
+    # =============================================
+    def _compute_vi(self, V_z, T_norm):
+        """
+        [구간별 공식]
+          x > 0      상승  : momentum theory   v_i = (-V_c + sqrt(V_c²+4v_h²)) / 2
+          -2 ≤ x ≤ 0 VRS   : Glauert 다항식 근사 (아래)
+          x < -2     windmill brake : momentum theory  v_i = (-V_c - sqrt(V_c²-4v_h²)) / 2
+
+        [Glauert 다항식 계수 k0~k3]
+          momentum theory 경계조건 (x=0 → y=1, x=-2 → y=1) 을 만족하도록
+          구성한 근사 다항식이며, 특정 문헌의 정확한 curve-fit 계수를
+          그대로 사용한 것은 아님. (논문 작성 시 출처 오인 방지)
+          k0=1.0, k1=-0.5, k2=0.25, k3=0.25 (k4=0)
+
+        반환: (v_i, v_h) — 단위 m/s
+        """
+        T_nom = float(np.clip(T_norm, 0.0, 1.0)) * self.T_max
+        if T_nom <= 0.0:
+            return 0.0, 0.0
+
+        v_h = np.sqrt(T_nom / (2.0 * self.rho * self.rotor_A))
+        V_c = -V_z          # 상승속도 (V_z 양수=하강이므로 부호 반전)
+        x   = V_c / v_h    # 정규화 상승속도
+
+        if x > 0.0:
+            # 상승: momentum theory 상승 공식 (항상 실수 해)
+            v_i = (-V_c + np.sqrt(V_c**2 + 4.0*v_h**2)) / 2.0
+
+        elif x >= -2.0:
+            # VRS 무효구간: Glauert 다항식
+            y   = 1.0 + (-0.5)*x + 0.25*x**2 + 0.25*x**3
+            v_i = y * v_h
+
+        else:
+            # windmill brake state: momentum theory 역류 공식
+            disc = V_c**2 - 4.0*v_h**2
+            if disc < 0.0:
+                # x가 -2 직하방(수치 오차) → 경계값으로 대체
+                v_i = v_h
+            else:
+                v_i = (-V_c - np.sqrt(disc)) / 2.0
+
+        # v_i는 물리적으로 항상 양수
+        v_i = max(float(v_i), 0.0)
+        return v_i, float(v_h)
+
+    # =============================================
     # _vrs_ratio(): VRS 위험도 비율 계산
-    # V_z / v_h
-    # v_h = sqrt(T / 2ρA)  ← 호버링 유도 속도
+    # V_z / v_h  (구간 경계값 0.5 / 0.8 / 2.0 기준)
     # =============================================
     def _vrs_ratio(self, V_z, T_norm):
-        T_actual = T_norm * self.T_max
+        _, v_h = self._compute_vi(V_z, T_norm)
 
-        # 추력이 0이면 v_h 계산 불가 → 매우 큰 값 반환 (RECOVER 처리)
-        if T_actual <= 0:
+        # 추력이 0이면 v_h=0 → 계산 불가 → RECOVER 처리
+        if v_h <= 0.0:
             return 999.0
-
-        # 호버링 유도 속도 v_h
-        v_h = np.sqrt(T_actual / (2.0 * self.rho * self.rotor_A))
 
         # VRS 비율 (V_z 음수=상승이면 ratio 음수 → SAFE)
         ratio = V_z / v_h
