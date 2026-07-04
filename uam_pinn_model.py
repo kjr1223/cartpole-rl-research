@@ -73,57 +73,81 @@ class UAMPINN(nn.Module):
 
 def physics_residual(state, action, next_state_pred):
     """
-    모멘텀 이론 동역학 잔차 계산
+    모멘텀 이론 동역학 잔차 계산 (RK4 적분, uam_vrs_env.py RK45와 일치)
 
-    uam_vrs_env.py의 step()에 있는 적분식을 "물리 법칙"으로 그대로 가져와서,
-    신경망이 예측한 next_state가 이 물리 법칙과 얼마나 다른지(잔차)를 계산한다.
-    이 잔차를 손실함수에 더해주면 신경망이 물리적으로 말이 되는 방향으로 학습된다.
+    uam_vrs_env.py의 _derivatives()를 PyTorch 배치 연산으로 구현한 뒤
+    RK4(4차 Runge-Kutta)로 DT 구간을 적분해서 next_state 물리 기준값을 만든다.
+    RK45를 쓰는 환경과 동일한 ODE를 적분하므로 Euler 잔차보다 물리적으로 정확하다.
 
-    실제 동역학 (uam_vrs_env.py step()과 동일):
-        T_norm_new = clip(T_norm + dT * dt, 0, 1)   # 추력 업데이트
-        T_actual   = T_norm_new * T_MAX             # 정규화 추력 → 실제 추력(N)
-        a_z        = (T_actual - m*g) / m           # 수직 가속도 (양수=상승가속)
-        V_z_new    = V_z - a_z * dt                 # 하강속도 업데이트
-        alt_new    = alt - V_z * dt                 # 고도 업데이트 (주의: 갱신 *전* V_z 사용!)
-        V_x_new    = V_x                            # 전진속도는 단순화를 위해 변화 없음
+    ODE (uam_vrs_env._derivatives 와 동일):
+        dV_x/dt  = 0
+        dV_z/dt  = -(T_norm_clamped * T_MAX - MASS*g) / MASS   (-a_z)
+        dalt/dt  = -V_z
+        dT_norm/dt = dT  (액션이 추력 변화율)
 
     인자:
         state           : (batch, 4) 텐서, [V_x, V_z, alt, T_norm]
-        action          : (batch, 1) 텐서, dT
+        action          : (batch, 1) 텐서, dT (추력 변화율)
         next_state_pred : 신경망이 예측한 (batch, 4) next_state
 
     반환:
         residual      : 신경망 예측 - 물리 법칙 예측 (이 값이 작아지도록 학습시킴)
-        next_physics  : 물리 법칙만으로 계산한 next_state (참고/검증용)
+        next_physics  : RK4로 계산한 next_state (참고/검증용)
     """
-    # state를 각 물리량으로 분리 (슬라이싱으로 (batch,1) 모양 유지)
     V_x    = state[:, 0:1]
     V_z    = state[:, 1:2]
     alt    = state[:, 2:3]
     T_norm = state[:, 3:4]
-    dT     = action
+    dT     = action   # (batch, 1) — 추력 변화율, 적분 중 상수 취급
 
-    # 1. 추력 업데이트: 정규화 추력에 dT*dt만큼 더하고 [0,1]로 클리핑
-    T_norm_new = torch.clamp(T_norm + dT * DT, 0.0, 1.0)
-    T_actual   = T_norm_new * T_MAX
+    def deriv(vx, vz, al, tn):
+        """uam_vrs_env._derivatives 를 배치 텐서로 재현"""
+        T_c      = torch.clamp(tn, 0.0, 1.0)
+        T_actual = T_c * T_MAX
+        a_z      = (T_actual - MASS * GRAVITY) / MASS
+        d_vx  = torch.zeros_like(vx)   # dV_x/dt = 0
+        d_vz  = -a_z                    # dV_z/dt
+        d_alt = -vz                     # dalt/dt
+        d_tn  = dT                      # dT_norm/dt = action (constant over step)
+        return d_vx, d_vz, d_alt, d_tn
 
-    # 2. 수직 가속도: a_z = (실제추력 - 중력) / 질량
-    #    T_actual > mg 이면 a_z > 0 (상승 가속, 하강속도 감소)
-    a_z = (T_actual - MASS * GRAVITY) / MASS
+    # ── RK4: k1 ~ k4 계산 ─────────────────────────────────────────
+    k1 = deriv(V_x, V_z, alt, T_norm)
 
-    # 3. 하강속도 업데이트 (V_z는 양수=하강이라서 상승가속이면 빼줌)
-    V_z_new = V_z - a_z * DT
+    k2 = deriv(
+        V_x  + k1[0] * DT / 2,
+        V_z  + k1[1] * DT / 2,
+        alt  + k1[2] * DT / 2,
+        T_norm + k1[3] * DT / 2,
+    )
 
-    # 4. 고도 업데이트: env.step()과 똑같이 "갱신 전" V_z를 사용한다.
-    #    (V_z_new를 쓰면 env의 실제 적분 순서와 달라져서 잔차가 부정확해짐)
-    alt_new = alt - V_z * DT
+    k3 = deriv(
+        V_x  + k2[0] * DT / 2,
+        V_z  + k2[1] * DT / 2,
+        alt  + k2[2] * DT / 2,
+        T_norm + k2[3] * DT / 2,
+    )
 
-    # 5. 전진속도: 이 환경에서는 단순화를 위해 변화 없음
-    V_x_new = V_x
+    k4 = deriv(
+        V_x  + k3[0] * DT,
+        V_z  + k3[1] * DT,
+        alt  + k3[2] * DT,
+        T_norm + k3[3] * DT,
+    )
+
+    # ── RK4 가중평균으로 next_state 계산 ──────────────────────────
+    V_x_new    = V_x   + (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]) * DT / 6
+    V_z_new    = V_z   + (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]) * DT / 6
+    alt_new    = alt   + (k1[2] + 2*k2[2] + 2*k3[2] + k4[2]) * DT / 6
+    # T_norm: dT가 상수라서 Simpson 적분 = Euler와 동일하지만 clamp는 끝에 한 번 적용
+    T_norm_new = torch.clamp(
+        T_norm + (k1[3] + 2*k2[3] + 2*k3[3] + k4[3]) * DT / 6,
+        0.0, 1.0
+    )
 
     next_physics = torch.cat([V_x_new, V_z_new, alt_new, T_norm_new], dim=1)
 
-    # 잔차 = 신경망 예측 - 물리 법칙 예측. 0에 가까울수록 물리적으로 정확한 예측.
+    # 잔차 = 신경망 예측 - RK4 물리 기준. 0에 가까울수록 물리적으로 정확한 예측.
     residual = next_state_pred - next_physics
     return residual, next_physics
 
