@@ -14,10 +14,10 @@ cursor.execute("""
     CREATE TABLE IF NOT EXISTS markings (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
         step      INTEGER,
-        cart_pos  REAL,
-        cart_vel  REAL,
-        pole_ang  REAL,
-        pole_vel  REAL,
+        cart_pos  REAL, # 카트 위치
+        cart_vel  REAL, # 카트 속도
+        pole_ang  REAL, # 막대 각도
+        pole_vel  REAL, # 막대 각속도
         marked_at TEXT
     )
 """)

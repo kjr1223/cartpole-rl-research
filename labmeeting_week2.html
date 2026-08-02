@@ -1,0 +1,471 @@
+<title>개인 연구 진행 상황 — 2주차</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0D1B3E;
+    --bg2:       #0A1530;
+    --surface:   #142354;
+    --border:    #1E3A7A;
+    --accent:    #2563B0;
+    --accent2:   #1A4A9A;
+    --text:      #F0F4FF;
+    --muted:     #9BAED0;
+    --orange:    #E07B2A;
+    --orange-lt: #F4A55A;
+    --green:     #2ECC71;
+    --green-dk:  #1A9450;
+    --red:       #E74C3C;
+    --yellow:    #F1C40F;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── 헤더 바 ── */
+  .header {
+    background: var(--accent);
+    padding: 0 28px;
+    height: 7px;
+  }
+
+  /* ── 타이틀 행 ── */
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 28px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .title-row h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .logo-icon {
+    width: 22px; height: 22px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #fff; font-weight: 900;
+  }
+
+  /* ── 메인 그리드 ── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 0;
+    padding: 16px 28px 14px;
+    min-height: calc(100vh - 80px);
+  }
+
+  .left { padding-right: 24px; border-right: 1px solid var(--border); }
+  .right { padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── 섹션 제목 ── */
+  .section-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--orange);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── 불릿 블록 ── */
+  .block { margin-bottom: 16px; }
+
+  ul.top { list-style: none; padding: 0; }
+  ul.top > li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  ul.top > li::before {
+    content: '●';
+    position: absolute; left: 0;
+    font-size: 8px; top: 4px;
+    color: var(--orange);
+  }
+
+  ul.sub { list-style: none; padding-left: 14px; margin-top: 3px; }
+  ul.sub > li {
+    position: relative;
+    padding-left: 13px;
+    margin-bottom: 3px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  ul.sub > li::before {
+    content: '○';
+    position: absolute; left: 0;
+    font-size: 8px; top: 3px;
+    color: var(--muted);
+  }
+  ul.sub > li b { color: var(--text); }
+
+  ul.sub2 { list-style: none; padding-left: 14px; margin-top: 2px; }
+  ul.sub2 > li {
+    position: relative;
+    padding-left: 13px;
+    margin-bottom: 2px;
+    font-size: 12px;
+    color: #7B99C8;
+  }
+  ul.sub2 > li::before {
+    content: '■';
+    position: absolute; left: 0;
+    font-size: 7px; top: 4px;
+    color: #5A7AB0;
+  }
+  ul.sub2 > li b { color: var(--muted); }
+
+  /* ── 하이라이트 태그 ── */
+  .tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .tag-green  { background: rgba(46,204,113,0.18); color: var(--green); }
+  .tag-orange { background: rgba(224,123,42,0.2);  color: var(--orange-lt); }
+  .tag-red    { background: rgba(231,76,60,0.18);  color: #FF8F85; }
+  .tag-blue   { background: rgba(37,99,176,0.3);   color: #7EB8F7; }
+  .tag-yellow { background: rgba(241,196,15,0.18); color: var(--yellow); }
+
+  /* ── 테이블 ── */
+  .tbl-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  thead tr { background: var(--accent2); }
+  thead th {
+    padding: 6px 10px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11.5px;
+    color: #C8D8F0;
+    letter-spacing: 0.2px;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td {
+    padding: 5px 10px;
+    color: var(--muted);
+    text-align: center;
+    vertical-align: middle;
+  }
+  tbody td:first-child { text-align: left; color: var(--text); font-weight: 600; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.025); }
+
+  .rate-high   { color: var(--green);    font-weight: 700; }
+  .rate-mid    { color: var(--orange-lt);font-weight: 700; }
+  .rate-low    { color: #FF8F85;         font-weight: 700; }
+  .rate-active { color: var(--yellow);   font-weight: 700; }
+
+  /* ── 착지율 추이 박스 ── */
+  .trend-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 11px 13px;
+    font-size: 12px;
+  }
+  .trend-box .t-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 7px;
+    letter-spacing: 0.3px;
+  }
+  .trend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .trend-row:last-child { border-bottom: none; }
+  .trend-row .tr-label { color: var(--text); font-size: 11.5px; }
+  .trend-row .tr-val   { font-variant-numeric: tabular-nums; }
+
+  /* ── 진행중 배지 ── */
+  .badge-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(241,196,15,0.12);
+    border: 1px solid rgba(241,196,15,0.35);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+  .dot-live {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dot-live { animation: none; }
+  }
+
+  /* ── 구분선 ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 12px 0;
+  }
+
+  /* ── 하단 예정 ── */
+  .footer-notes {
+    border-top: 1px solid var(--border);
+    padding: 10px 28px 14px;
+    display: flex;
+    gap: 28px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .footer-notes span b { color: var(--text); }
+  .footer-notes span::before { content: '- '; }
+</style>
+
+<div class="header"></div>
+
+<div class="title-row">
+  <h1>개인 연구 진행 상황</h1>
+  <div class="logo">
+    <div class="logo-icon">UV</div>
+    UVISIS LAB
+  </div>
+</div>
+
+<div class="main">
+  <!-- ═══════════════ 왼쪽 ═══════════════ -->
+  <div class="left">
+
+    <!-- Stage 2 실패 분석 -->
+    <div class="block">
+      <div class="section-title">Stage 2 (60~90m) 학습 시도 및 분석</div>
+      <ul class="top">
+        <li>
+          <b>v1 — 물리적 모순 발견 → 폐기</b>
+          <ul class="sub">
+            <li>max_steps=6,000 (15초) 설정 상태에서 60m 하강 시도</li>
+            <li>착지 조건: V<sub>z</sub> ≤ 2 m/s → 최소 30초 필요 <span class="tag tag-red">시간 부족</span></li>
+            <li>에이전트가 착지 불가능한 환경에서 학습 → 착지율 0%</li>
+          </ul>
+        </li>
+        <li>
+          <b>v2 / v3 — max_steps=10,000으로 수정, 추가 학습</b>
+          <ul class="sub">
+            <li>v2: 1,000 에피소드 학습 → 착지율 <b>2.3%</b></li>
+            <li>v3: v2 이어서 1,000 에피소드 추가 → <b>2.0%</b> <span class="tag tag-red">고원(Plateau)</span></li>
+            <li>원인 분석: 90m 하강 = Stage 1 대비 3배 이상 긴 경로, 올바른 행동을 연속으로 유지해야 하는 횟수 급증 → 학습 신호 희소</li>
+            <ul class="sub2">
+              <li>학습을 더 해도 2%대에서 벗어나지 못함 — 순수 SAC의 한계</li>
+            </ul>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Context DB + Ontology -->
+    <div class="block">
+      <div class="section-title">Context DB + Ontology 적용 (Stage 2 v4) <span class="tag tag-green" style="margin-left:6px">53.3% 달성</span></div>
+      <ul class="top">
+        <li>
+          <b>문제 원인</b>: CAUTION 구역(V<sub>z</sub>/v<sub>h</sub> = 0.5~0.8)에서 학습 신호 부재
+          <ul class="sub">
+            <li>DANGER/RECOVER는 온톨로지가 추력 강제 증가로 이미 처리</li>
+            <li>CAUTION만 에이전트가 직접 학습해야 하는데 → 신호가 너무 희소</li>
+          </ul>
+        </li>
+        <li>
+          <b>해결</b>: 사람이 마킹한 CAUTION 경계 상태 1,084개를 DB에 저장
+          <ul class="sub">
+            <li>에이전트가 마킹 상태와 정규화 거리 &lt;0.3 이내 진입 시 보상 <b>+3.0</b></li>
+            <li>학습 중 보너스 발생: 4,861,645회 → 희소 구역 학습 신호 충분히 보강</li>
+          </ul>
+        </li>
+        <li>
+          <b>결과</b>: v3 2.0% → v4 <span class="tag tag-green">53.3%</span>
+          <ul class="sub">
+            <li>ep300 피크(~61%) 이후 점진적 하락, ep1,000 최종 53.3%</li>
+            <li>best 모델: stage2_v4_best.pth (ep300 기준) → Stage 3 시작점으로 사용</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Stage 3 -->
+    <div class="block">
+      <div class="section-title">
+        Stage 3 (100~150m) 학습 진행 중
+        <div class="badge-live"><div class="dot-live"></div>LIVE · ep 410 / 1,000</div>
+      </div>
+      <ul class="top">
+        <li>시작점: Stage 2 v4 best (ep300), Context DB + Ontology 동일 적용</li>
+        <li>max_steps = 16,000 (40초) — 150m 하강 충분히 수용</li>
+        <li>
+          현재 착지율 추이
+          <ul class="sub">
+            <li>ep10: <b>60.0%</b> (v4 정책 그대로 시작, 버퍼 미채움)</li>
+            <li>ep260~280: <b>68%</b> 피크 → ep410 현재 <span class="tag tag-yellow">60.2% 유지 중</span></li>
+          </ul>
+        </li>
+        <li>보너스 발생 4,339,984회 — CAUTION 구역 학습 신호 지속 공급 중</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ 오른쪽 ═══════════════ -->
+  <div class="right">
+
+    <!-- 커리큘럼 결과 표 -->
+    <div>
+      <div class="section-title" style="font-size:12px; margin-bottom:8px;">커리큘럼 착지율 비교</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left">구분</th>
+              <th>방법</th>
+              <th>착지율</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Stage 1<br><span style="font-size:11px;color:#5A7AB0">20~40m</span></td>
+              <td>순수 SAC<br><span style="font-size:11px">(생존보상 제거)</span></td>
+              <td class="rate-mid">9.5%</td>
+            </tr>
+            <tr>
+              <td>Stage 2 v1~v3<br><span style="font-size:11px;color:#5A7AB0">60~90m</span></td>
+              <td>순수 SAC</td>
+              <td class="rate-low">2.0~2.3%<br><span style="font-size:11px;font-weight:400">고원</span></td>
+            </tr>
+            <tr style="background:rgba(46,204,113,0.06)">
+              <td>Stage 2 v4<br><span style="font-size:11px;color:#5A7AB0">60~90m</span></td>
+              <td>SAC +<br>Context DB<br>+ Ontology</td>
+              <td class="rate-high">53.3%</td>
+            </tr>
+            <tr style="background:rgba(241,196,15,0.05)">
+              <td>Stage 3 v1<br><span style="font-size:11px;color:#5A7AB0">100~150m</span></td>
+              <td>SAC +<br>Context DB<br>+ Ontology</td>
+              <td class="rate-active">60.2%<br><span style="font-size:11px;font-weight:400">진행중</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 착지율 추이 -->
+    <div class="trend-box">
+      <div class="t-title">— Stage 2 v4 착지율 추이</div>
+      <div class="trend-row">
+        <span class="tr-label">ep10 (시작)</span>
+        <span class="tr-val" style="color:#7EB8F7">80.0%</span>
+      </div>
+      <div class="trend-row">
+        <span class="tr-label">ep60~70 (적응 중)</span>
+        <span class="tr-val" style="color:#FF8F85">44% ↓</span>
+      </div>
+      <div class="trend-row">
+        <span class="tr-label">ep300 (피크)</span>
+        <span class="tr-val" style="color:var(--green)">~61% ↑</span>
+      </div>
+      <div class="trend-row">
+        <span class="tr-label">ep1000 (최종)</span>
+        <span class="tr-val" style="color:var(--orange-lt)">53.3%</span>
+      </div>
+
+      <div class="t-title" style="margin-top:10px">— Stage 3 v1 착지율 추이</div>
+      <div class="trend-row">
+        <span class="tr-label">ep10 (시작)</span>
+        <span class="tr-val" style="color:#7EB8F7">60.0%</span>
+      </div>
+      <div class="trend-row">
+        <span class="tr-label">ep260~280 (피크)</span>
+        <span class="tr-val" style="color:var(--green)">68% ↑</span>
+      </div>
+      <div class="trend-row">
+        <span class="tr-label">ep410 (현재)</span>
+        <span class="tr-val" style="color:var(--yellow)">60.2% ●</span>
+      </div>
+    </div>
+
+    <!-- Context DB 요약 -->
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">항목</th>
+            <th>v3 (이전)</th>
+            <th>v4 (현재)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>학습 신호</td><td>희소</td><td>DB 보강</td></tr>
+          <tr><td>CAUTION 처리</td><td>없음</td><td>마킹 보너스</td></tr>
+          <tr><td>DANGER 처리</td><td>온톨로지</td><td>온톨로지</td></tr>
+          <tr><td>마킹 수</td><td>—</td><td>1,084개</td></tr>
+          <tr><td>착지율</td><td style="color:#FF8F85">2.0%</td><td style="color:var(--green)">53.3%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer-notes">
+  <span><b>Stage 3 완료 후</b> 커리큘럼 전체 결과 정리 및 논문 Results 섹션 업데이트 예정</span>
+  <span><b>best 모델 기준</b> Stage 2 ep300 → Stage 3 시작점으로 사용 중</span>
+  <span><b>다음 단계</b> Stage 3 결과에 따라 Figure 추가 및 논문 제출본 수정</span>
+</div>

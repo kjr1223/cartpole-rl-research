@@ -1,0 +1,265 @@
+<title>개인 연구 진행 상황 — 2차</title>
+<style>
+  :root {
+    --navy:   #1B2A4A;
+    --amber:  #E07B2A;
+    --bg:     #FFFFFF;
+    --card:   #F5F6F9;
+    --border: #D0D5E0;
+    --text:   #1A202C;
+    --sub:    #4A5568;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111827; --card:#1F2937; --border:#374151; --text:#F3F4F6; --sub:#9CA3AF; }
+  }
+  :root[data-theme="light"] { --bg:#FFFFFF; --card:#F5F6F9; --border:#D0D5E0; --text:#1A202C; --sub:#4A5568; }
+  :root[data-theme="dark"]  { --bg:#111827; --card:#1F2937; --border:#374151; --text:#F3F4F6; --sub:#9CA3AF; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .slide { max-width: 1060px; margin: 0 auto; }
+
+  .slide-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .slide-header h1 { font-size: 19px; font-weight: 700; }
+  .lab-name { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: #A8BFDA; }
+  .accent-bar { height: 4px; background: linear-gradient(90deg, var(--amber), #F5A05A); }
+
+  .body { display: grid; grid-template-columns: 1fr 300px; }
+
+  .left-col { padding: 20px 24px 24px 28px; border-right: 1px solid var(--border); }
+  .right-col { padding: 20px 20px 24px; }
+
+  .section { margin-bottom: 18px; }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 2px solid var(--amber);
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+
+  ul { list-style: none; padding: 0; }
+  ul li {
+    font-size: 12.5px;
+    color: var(--text);
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 3px;
+  }
+  ul li::before { content: "•"; position: absolute; left: 0; color: var(--amber); }
+  ul li.sub {
+    font-size: 12px;
+    padding-left: 24px;
+    color: var(--sub);
+    margin-bottom: 2px;
+  }
+  ul li.sub::before { content: "○"; left: 12px; color: var(--border); }
+
+  code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 11px;
+    background: var(--card);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--amber);
+  }
+
+  .right-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 2px solid var(--amber);
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 14px;
+  }
+  th {
+    background: var(--navy);
+    color: #fff;
+    padding: 5px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-align: left;
+  }
+  td {
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+  }
+  tr:nth-child(odd) td { background: var(--card); }
+  .best-row td { border-left: 3px solid var(--amber); }
+
+  .pos { color: #276749; font-weight: 700; }
+  .neg { color: #9B2C2C; }
+  .cur { color: #7B341E; }
+  :root[data-theme="dark"] .pos { color: #9AE6B4; }
+  :root[data-theme="dark"] .neg { color: #FC8181; }
+  :root[data-theme="dark"] .cur { color: #FBD38D; }
+
+  .note {
+    background: var(--card);
+    border-left: 3px solid var(--navy);
+    padding: 7px 10px;
+    font-size: 11.5px;
+    color: var(--sub);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .note strong { color: var(--text); display: block; margin-bottom: 3px; }
+
+  .footer {
+    padding: 9px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--sub);
+  }
+  .footer strong { color: var(--navy); }
+  :root[data-theme="dark"] .footer strong { color: #93C5FD; }
+</style>
+
+<div class="slide">
+  <div class="slide-header">
+    <h1>개인 연구 진행 상황</h1>
+    <span class="lab-name">✦ UVISIS LAB</span>
+  </div>
+  <div class="accent-bar"></div>
+
+  <div class="body">
+    <div class="left-col">
+
+      <!-- 1. 교수님 피드백 -->
+      <div class="section">
+        <div class="section-title">교수님 피드백 반영 — 전면 재설계</div>
+        <ul>
+          <li>피드백 요약: "심플한 SAC가 더 좋다 — 처음부터 다시, 보상 함수를 논리적으로 재설계해라"</li>
+          <li>기존 접근의 근본 문제 확인:</li>
+          <li class="sub">생존 보상 (+1/스텝 × 12,000 스텝 = 최대 +12,000) → 착지 보너스(+500)를 압도</li>
+          <li class="sub">에이전트가 학습한 것: "착지하지 말고 버텨라" → 착지율 1,000 에피소드 내내 0%</li>
+          <li class="sub">PINN·Reward Shaping은 잘못된 보상 구조 위의 패치 → 효과 없음</li>
+          <li>결론: 보상 구조 자체를 처음부터 재설계, 기존 체크포인트 전부 폐기</li>
+        </ul>
+      </div>
+
+      <!-- 2. 새 보상 함수 -->
+      <div class="section">
+        <div class="section-title">보상 함수 재설계 (처음부터)</div>
+        <ul>
+          <li>설계 원칙: 생존에 아무 이득 없음 — 내려가야 이득, VRS 들어가면 손해, 착지 = 최대 보상</li>
+          <li>하강 진행 보상: <code>+alt_drop × 1.0</code> — 한 스텝에 내려간 거리에 직접 비례</li>
+          <li>VRS 이차 패널티: <code>-(vrs_ratio - 0.5)² × 30</code> — 깊이 들어갈수록 급격히 강해짐</li>
+          <li class="sub">ratio=0.6: -0.3/스텝 (경고) → ratio=1.0: -7.5/스텝 → ratio=1.5: -30.0/스텝 (심각)</li>
+          <li>착지 성공: <code>+500</code> (생존 보상 없으니 이게 압도적 최대값)</li>
+          <li>추락: <code>-100</code> / 고도 초과: <code>-50</code></li>
+          <li>PINN 없음 — 순수 SAC / 기존 체크포인트 없음 — 랜덤 초기화</li>
+        </ul>
+      </div>
+
+      <!-- 3. 현재 학습 결과 -->
+      <div class="section">
+        <div class="section-title">순수 SAC 재학습 결과 (Stage 1 완료)</div>
+        <ul>
+          <li>고도 20~40m (Stage 1), max_steps=6,000, alpha=0.03, 랜덤 초기화</li>
+          <li>ep50 착지율 2% 첫 발생 → ep670에서 10% 돌파 → 최종 <strong>9.5% (95/1,000)</strong> 달성</li>
+          <li class="sub">기존 모든 방법(SAC 커리큘럼·PINN·Reward Shaping)은 ep1,000까지 착지율 0%</li>
+          <li>최고 Eval: ep400에서 <strong>+373.40</strong> 달성 → fresh_best.pth 저장</li>
+          <li>Catastrophic forgetting 없이 ep1,000까지 착지율 안정 유지</li>
+        </ul>
+      </div>
+
+      <!-- 4. Stage 2 확장 -->
+      <div class="section">
+        <div class="section-title">Stage 2 고도 확장 학습 (예정)</div>
+        <ul>
+          <li>Stage 1 착지 달성 확인 → 고도 60~90m (Stage 2)로 확장 예정</li>
+          <li>시작 체크포인트: fresh_best.pth (ep400, Eval +373)</li>
+          <li>max_steps=6,000 유지, 보상 함수 동일 적용</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="right-col">
+
+      <div class="right-title">보상 구조 비교</div>
+      <table>
+        <thead>
+          <tr><th>항목</th><th>기존</th><th>재설계</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>생존 보상</td><td class="neg">+1/스텝</td><td class="pos">없음</td></tr>
+          <tr><td>하강 보상</td><td>+0.05×drop</td><td class="pos">+1.0×drop</td></tr>
+          <tr><td>VRS 패널티</td><td>구역별 고정값</td><td class="pos">이차 함수</td></tr>
+          <tr><td>착지 보너스</td><td>+500</td><td>+500</td></tr>
+          <tr><td>PINN</td><td>사용</td><td class="pos">없음</td></tr>
+          <tr><td>초기 모델</td><td>ep1100 체크포인트</td><td class="pos">랜덤</td></tr>
+        </tbody>
+      </table>
+
+      <div class="right-title">모델별 착지율 비교</div>
+      <table>
+        <thead>
+          <tr><th>모델</th><th>착지율</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SAC 커리큘럼</td><td class="neg">0%</td></tr>
+          <tr><td>Stage 3 재학습</td><td class="neg">0%</td></tr>
+          <tr><td>PINN 가상경험</td><td class="neg">0%</td></tr>
+          <tr><td>Reward Shaping</td><td class="neg">0%</td></tr>
+          <tr class="best-row"><td><strong>순수 SAC 재설계 ★</strong></td><td class="pos">9.5% (완료)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>착지율 추이 (Stage 1 완료)</strong>
+        ep50: 2% → ep400: Eval +373 ★<br>
+        ep670: 10% 돌파 → ep1,000: 9.5% 안정 완료<br>
+        기존 방법은 ep1,000까지 전부 0% — 생존 보상 제거가 핵심
+      </div>
+
+      <div class="right-title">다음 단계</div>
+      <table>
+        <thead>
+          <tr><th>단계</th><th>고도</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Stage 1</td><td>20~40m</td><td class="pos">완료 (9.5%)</td></tr>
+          <tr class="best-row"><td><strong>Stage 2</strong></td><td><strong>60~90m</strong></td><td class="cur">예정</td></tr>
+          <tr><td>Stage 3</td><td>100~150m</td><td style="color:var(--sub)">미정</td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>청주대학교 UVISIS LAB</strong>
+    <span>UAM VRS 회피 착륙 강화학습 연구 · 2026.07</span>
+  </div>
+</div>

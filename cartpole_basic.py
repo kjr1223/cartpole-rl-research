@@ -1,3 +1,4 @@
+# CartPole 기본. 여기에 학습을 붙이면 강화학습 
 import gymnasium as gym
 import time
 
@@ -9,7 +10,7 @@ print(f"상태 의미: [카트위치, 카트속도, 막대각도, 막대각속�
 print(f"초기 상태: {observation}")
 
 for step in range(200):
-    action = env.action_space.sample()
+    action = env.action_space.sample() # 무작위로 왼/오 선택. 랜덤.
     observation, reward, terminated, truncated, info = env.step(action)
     print(f"step {step:3d} | 상태: {observation} | 보상: {reward}")
     time.sleep(0.05)

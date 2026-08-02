@@ -355,8 +355,19 @@ def train(
     marking_bonus     = 3.0,                       # 마킹 근처일 때 더해줄 보상 보너스
     fixed_alpha   = 0.05,                          # None이면 auto-alpha 사용(불안정 가능성 있었음).
                                                     # 값을 주면 alpha를 이 값으로 고정하고 자동조정을 끈다.
+    buffer_size   = 50_000,                         # RAM 절약: 기본 100k → 50k
+    log_file      = None,                          # 실시간 학습 로그 파일 경로 (None이면 stdout만)
 ):
     os.makedirs(save_dir, exist_ok=True)
+
+    # 실시간 로그 파일 핸들 (None이면 stdout만 사용)
+    _log_fh = open(log_file, 'w', buffering=1) if log_file else None
+
+    def _log(msg):
+        """stdout + 파일에 동시 기록 (buffering=1 → 줄 단위 즉시 flush)"""
+        print(msg)
+        if _log_fh:
+            _log_fh.write(msg + '\n')
 
     env  = VRSEnv()
 
@@ -365,10 +376,10 @@ def train(
     # 패턴이 똑같이 재현됨), 근본 원인을 더 깊게 진단하기 전까지는 고정 alpha를
     # 기본값으로 쓴다. fixed_alpha=None으로 호출하면 기존 auto-alpha 방식도 쓸 수 있다.
     if fixed_alpha is not None:
-        agent = SACAgent(auto_alpha=False, alpha=fixed_alpha)
+        agent = SACAgent(auto_alpha=False, alpha=fixed_alpha, buffer_size=buffer_size)
         print(f"[Alpha] 고정값 사용: alpha={fixed_alpha} (auto-alpha 비활성화)")
     else:
-        agent = SACAgent()
+        agent = SACAgent(buffer_size=buffer_size)
 
     # ----------------------------------------
     # PINN 로드 (use_pinn=True일 때만)
@@ -405,18 +416,18 @@ def train(
 
     total_target_episodes = sum(c[3] for c in curriculum)
 
-    print(f"\n{'='*50}")
-    print(f"UAM VRS SAC 학습 시작")
-    print(f"총 스테이지: {len(curriculum)}개, 총 에피소드: {total_target_episodes}")
-    print(f"{'='*50}\n")
+    _log(f"\n{'='*50}")
+    _log(f"UAM VRS SAC 학습 시작")
+    _log(f"총 스테이지: {len(curriculum)}개, 총 에피소드: {total_target_episodes}")
+    _log(f"{'='*50}\n")
 
     for stage_idx, (alt_low, alt_high, max_steps, n_episodes) in enumerate(curriculum, start=1):
         env.reset_alt_low  = alt_low
         env.reset_alt_high = alt_high
         env.max_steps      = max_steps
 
-        print(f"\n[Curriculum Stage {stage_idx}] alt=({alt_low}, {alt_high})m, "
-              f"max_steps={max_steps}, episodes={n_episodes}\n")
+        _log(f"\n[Curriculum Stage {stage_idx}] alt=({alt_low}, {alt_high})m, "
+             f"max_steps={max_steps}, episodes={n_episodes}\n")
 
         for _ in range(n_episodes):
             episode += 1
@@ -503,14 +514,14 @@ def train(
             # 진행상황 출력
             if episode % 10 == 0:
                 avg = np.mean(ep_rewards[-10:])
-                print(f"Episode {episode:4d} | Avg Reward (10): {avg:8.2f} | "
-                      f"Buffer: {len(agent.buffer):6d} | Alpha: {agent.alpha:.4f}")
+                _log(f"Episode {episode:4d} | Avg Reward (10): {avg:8.2f} | "
+                     f"Buffer: {len(agent.buffer):6d} | Alpha: {agent.alpha:.4f}")
 
             # 평가 (결정론적 정책으로)
             if episode % eval_interval == 0:
                 eval_r = evaluate(agent, env, n_episodes=5)
                 eval_rewards.append((episode, eval_r))
-                print(f"\n[Eval] Episode {episode} | Eval Reward: {eval_r:.2f}\n")
+                _log(f"\n[Eval] Episode {episode} | Eval Reward: {eval_r:.2f}\n")
 
             # 체크포인트 저장
             if episode % save_interval == 0:
@@ -521,6 +532,9 @@ def train(
 
     # 학습 곡선 시각화
     plot_training(ep_rewards, eval_rewards, critic_losses, actor_losses)
+
+    if _log_fh:
+        _log_fh.close()
 
     env.close()
     return agent
@@ -581,18 +595,26 @@ def plot_training(ep_rewards, eval_rewards, critic_losses, actor_losses):
     axes[1, 1].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("uam_training_curves.png", dpi=150)
-    print("[Save] uam_training_curves.png")
-    plt.show()
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "uam_training_curves.png")
+    plt.savefig(out_path, dpi=150)
+    print(f"[Save] {out_path}")
+    plt.close()   # headless 환경에서 plt.show()는 hang → close로 대체
 
 
 # =============================================
 # 실행
 # =============================================
 if __name__ == "__main__":
+    import os as _os
+    _base = _os.path.dirname(_os.path.abspath(__file__))
     agent = train(
-        eval_interval  = 50,
+        eval_interval  = 100,
         save_interval  = 100,
         warmup_steps   = 1000,
-        save_dir       = "./uam_checkpoints",
+        save_dir       = _os.path.join(_base, "uam_checkpoints_v2"),  # 이전 run과 분리
+        buffer_size    = 50_000,
+        log_file       = _os.path.join(_base, "uam_training_v2.log"), # 실시간 로그
+        use_pinn       = False,
+        use_marking    = False,
     )

@@ -68,8 +68,8 @@ class VRSEnv(gym.Env):
 
 
         # 종료 조건
-        self.alt_min    = 0.0           # 착륙 고도 (m)
-        self.alt_max    = 200.0         # 최대 고도 (m)
+        self.alt_min    = 0.0           # 착륙 고도 (m). 이 고도 이하면 착지
+        self.alt_max    = 200.0         # 최대 고도 (m). 이 고도 이상이면 너무 높이 올라간 것
         self.V_z_crash  = 10.0          # 이 속도 이상으로 착륙하면 추락 (m/s)
 
         # =====================
@@ -171,6 +171,8 @@ class VRSEnv(gym.Env):
         T_norm_new = float(np.clip(T_norm_new,   0.0,   1.0))
 
         self.state = np.array([V_x_new, V_z_new, alt_new, T_norm_new], dtype=np.float32)
+        # 관측값 NaN/inf 안전 클리핑 (RK45 수치 오류 방어)
+        self.state = self._safe_obs(self.state)
         self.step_count += 1
 
         # ----------------------
@@ -197,10 +199,10 @@ class VRSEnv(gym.Env):
         zone_new  = self._ontology(V_z_new, T_norm_new)
 
         # ----------------------
-        # 6. 보상 계산
+        # 6. 보상 계산 (alt_prev 전달 → 하강 shaping 보상 계산용)
         # ----------------------
         reward, terminated = self._compute_reward(
-            V_z_new, alt_new, T_norm_new, vrs_ratio, zone_new
+            V_z_new, alt_new, T_norm_new, vrs_ratio, zone_new, alt_prev=alt
         )
 
         # 최대 스텝 초과 시 종료
@@ -271,8 +273,11 @@ class VRSEnv(gym.Env):
             v_i = (-V_c + np.sqrt(V_c**2 + 4.0*v_h**2)) / 2.0
 
         elif x >= -2.0:
-            # VRS 무효구간: Glauert 다항식
-            y   = 1.0 + (-0.5)*x + 0.25*x**2 + 0.25*x**3
+            # VRS 무효구간: Glauert 다항식 (계수 명시)
+            # y = k0 + k1*x + k2*x^2 + k3*x^3 + k4*x^4
+            # 경계조건: x=0 → y=1 (k0=1), x=-2 → y=1 (Leishman 검증)
+            k0, k1, k2, k3, k4 = 1.0, -0.5, 0.25, 0.25, 0.0
+            y   = k0 + k1*x + k2*x**2 + k3*x**3 + k4*x**4
             v_i = y * v_h
 
         else:
@@ -323,51 +328,74 @@ class VRSEnv(gym.Env):
     # =============================================
     # _compute_reward(): 보상 계산
     # =============================================
-    def _compute_reward(self, V_z, alt, T_norm, vrs_ratio, zone):
+    def _compute_reward(self, V_z, alt, T_norm, vrs_ratio, zone, alt_prev=None):
         reward     = 0.0
         terminated = False
 
         # ----------------------
-        # 기본 보상: 매 스텝 생존
+        # 1. 하강 진행 보상
+        # 생존 보상 제거 — 내려간 거리에 직접 비례해서 보상
+        # alt_drop 양수 = 하강, 음수 = 상승 (상승엔 보상 없음)
         # ----------------------
-        reward += 1.0
+        if alt_prev is not None:
+            alt_drop = alt_prev - alt
+            reward  += alt_drop * 1.0
 
         # ----------------------
-        # 고도 유지 보상: 목표 고도(0m)에 가까울수록 보상
+        # 2. VRS 패널티 (이차 함수)
+        # 비율이 높아질수록 급격히 강해짐 → 깊은 VRS 진입 강력 억제
+        # ratio=0.6: -0.3/스텝, ratio=1.0: -7.5/스텝, ratio=1.5: -30/스텝
         # ----------------------
-        reward -= 0.01 * alt   # 고도가 낮을수록 착륙에 가까움 → 보상
+        if vrs_ratio >= 0.5:
+            reward -= (vrs_ratio - 0.5) ** 2 * 30.0
 
         # ----------------------
-        # VRS 구역별 패널티
-        # ----------------------
-        if zone == "CAUTION":
-            reward -= 5.0
-        elif zone == "DANGER":
-            reward -= 20.0
-        elif zone == "RECOVER":
-            reward -= 10.0     # DANGER보다 낮음 (VRS는 벗어났으므로)
-
-        # ----------------------
-        # 안전 착륙 성공: alt ≈ 0, V_z 작을 때
+        # 3. 착지 성공
         # ----------------------
         if alt <= 1.0 and V_z <= 2.0:
-            reward += 100.0
-            terminated = True  # 성공적 착륙
+            reward += 500.0
+            terminated = True
 
         # ----------------------
-        # 실패 조건
+        # 4. 추락 (빠른 속도로 지면 충돌)
         # ----------------------
-        # 1. 추락: 너무 빠른 속도로 착지
         if alt <= 0.0 and V_z > self.V_z_crash:
+            reward -= 100.0
+            terminated = True
+
+        # ----------------------
+        # 5. 고도 초과
+        # ----------------------
+        if alt >= self.alt_max:
             reward -= 50.0
             terminated = True
 
-        # 2. 고도 초과
-        if alt >= self.alt_max:
-            reward -= 10.0
-            terminated = True
+        # ----------------------
+        # NaN/inf 안전장치
+        # ----------------------
+        if not np.isfinite(reward):
+            print(f"[REWARD-NaN] step={self.step_count} | "
+                  f"V_z={V_z:.3f} alt={alt:.3f} T_norm={T_norm:.3f} "
+                  f"vrs_ratio={vrs_ratio} zone={zone} raw_reward={reward}")
+            reward = -100.0
+
+        reward = float(np.clip(reward, -200.0, 600.0))
 
         return reward, terminated
+
+    # =============================================
+    # _safe_obs(): 관측값 NaN/inf 안전 클리핑
+    # step() 반환 전 observation을 검증할 때 사용
+    # =============================================
+    def _safe_obs(self, obs):
+        """NaN/inf를 안전값(0)으로 대체하고 경고 출력"""
+        if not np.all(np.isfinite(obs)):
+            print(f"[OBS-NaN] step={self.step_count} | obs_raw={obs}")
+            obs = np.where(np.isfinite(obs), obs, 0.0).astype(np.float32)
+        # 관측 공간 경계로 클리핑
+        low  = self.observation_space.low
+        high = self.observation_space.high
+        return np.clip(obs, low, high).astype(np.float32)
 
     # =============================================
     # render(): 에피소드 시각화

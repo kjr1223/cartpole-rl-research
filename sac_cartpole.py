@@ -26,8 +26,8 @@ class Actor(nn.Module):
 
     def forward(self, x):
         # softmax로 확률 변환
-        logits = self.network(x)
-        return F.softmax(logits, dim=-1)
+        logits = self.network(x) # x(상태4개)를 network에 넣음. network는 신경망.
+        return F.softmax(logits, dim=-1) # 신경망 출력값을 확률로 변환. 
 
     def get_action(self, x):
         probs = self.forward(x)
