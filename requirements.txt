@@ -1,0 +1,7 @@
+# torch CUDA 13.0 버전 별도 설치 필요:
+# pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu130
+numpy==2.4.4
+gymnasium==1.3.0
+scipy==1.17.1
+matplotlib==3.10.9
+pillow==12.2.0

@@ -3,6 +3,7 @@ __pycache__/
 *.log
 *.pid
 *.txt
+!requirements.txt
 
 # 체크포인트 (대용량 바이너리)
 *.pth
