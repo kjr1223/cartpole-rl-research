@@ -80,6 +80,15 @@ class VRSEnv(gym.Env):
         self.VRS_RECOVER = 2.0          # V_z/v_h 이상이면 RECOVER
 
         # =====================
+        # 방법론별 플래그
+        # =====================
+        # zone 분류(_ontology)는 항상 실행 — 평가 로깅(VRS 진입률 등)에 필요
+        # 플래그는 "개입(dT 강제)" 여부와 "VRS 패널티 포함" 여부만 제어
+        self.use_ontology_override = True   # DANGER/RECOVER → dT=1.0 강제 (방법론2,3: True / 방법론0,1: False)
+        self.use_vrs_penalty       = True   # VRS 이차 패널티 항 포함 여부 (방법론1,3: True / 방법론0,2: False)
+        self.use_time_penalty      = True   # 시간 패널티(-0.01/step) 포함 여부 (방법론0-a: False / 나머지: True)
+
+        # =====================
         # Gym 공간 정의
         # =====================
         # 관측 공간: [V_x, V_z, alt, T_norm]
@@ -109,14 +118,22 @@ class VRSEnv(gym.Env):
     # =============================================
     # reset(): 에피소드 초기 상태 설정
     # =============================================
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, options=None, fixed=False):
         super().reset(seed=seed)
 
-        # 초기 상태 랜덤 샘플링
-        V_x    = self.np_random.uniform(0.0, 5.0)    # 전진 속도 (m/s)
-        V_z    = self.np_random.uniform(0.0, 3.0)    # 하강 속도 (m/s), 살짝 하강 중
-        alt    = self.np_random.uniform(self.reset_alt_low, self.reset_alt_high) # 고도 (m)
-        T_norm = 0.5                                  # 추력 50%로 시작
+        if fixed:
+            # 고정 시나리오: 방법론 0~3 비교 실험용
+            # 동일 초기조건에서 시작해야 전략 차이만 보임
+            V_x    = 0.0   # 전진 속도 고정 (수직 하강 시나리오)
+            V_z    = 0.0   # 하강 속도 0 (호버링 상태에서 시작)
+            alt    = 30.0  # 고도 30m (VRS 진입 평균 시작점, 20~40m 범위 대표값)
+            T_norm = 0.5   # 추력 50%
+        else:
+            # 학습용: 랜덤 초기조건으로 다양한 상황 경험
+            V_x    = self.np_random.uniform(0.0, 5.0)
+            V_z    = self.np_random.uniform(0.0, 3.0)
+            alt    = self.np_random.uniform(self.reset_alt_low, self.reset_alt_high)
+            T_norm = 0.5
 
         self.state = np.array([V_x, V_z, alt, T_norm], dtype=np.float32)
         self.step_count = 0
@@ -143,14 +160,14 @@ class VRSEnv(gym.Env):
         zone = self._ontology(V_z, T_norm)
 
         # ----------------------
-        # 2. 결정론적 규칙 적용 (DANGER, RECOVER)
+        # 2. 결정론적 규칙 적용 (DANGER, RECOVER) — use_ontology_override=True일 때만
+        # zone 분류는 항상 위에서 실행 (로깅/평가용). 개입만 플래그로 제어.
         # ----------------------
-        if zone == "DANGER":
-            # VRS 위험 → 추력 강제 증가
-            dT = 1.0
-        elif zone == "RECOVER":
-            # 과속 하강 → 추력 강제 증가 + 전진속도 감속
-            dT = 1.0
+        if self.use_ontology_override:
+            if zone == "DANGER":
+                dT = 1.0
+            elif zone == "RECOVER":
+                dT = 1.0
 
         # ----------------------
         # 3. RK45로 동역학 전체 통합 적분
@@ -201,12 +218,14 @@ class VRSEnv(gym.Env):
         # ----------------------
         # 6. 보상 계산 (alt_prev 전달 → 하강 shaping 보상 계산용)
         # ----------------------
-        reward, terminated = self._compute_reward(
+        reward, terminated, termination_reason = self._compute_reward(
             V_z_new, alt_new, T_norm_new, vrs_ratio, zone_new, alt_prev=alt
         )
 
         # 최대 스텝 초과 시 종료
         truncated = self.step_count >= self.max_steps
+        if truncated and termination_reason is None:
+            termination_reason = "timeout"
 
         # 기록 저장
         self.history_alt.append(alt_new)
@@ -214,11 +233,14 @@ class VRSEnv(gym.Env):
         self.history_ontology.append(zone_new)
 
         info = {
-            "vrs_ratio" : vrs_ratio,
-            "zone"      : zone_new,
-            "step"      : self.step_count,
-            "v_i"       : v_i_new,
-            "v_h"       : v_h_new,
+            "vrs_ratio"          : vrs_ratio,
+            "zone"               : zone_new,
+            "step"               : self.step_count,
+            "v_i"                : v_i_new,
+            "v_h"                : v_h_new,
+            "termination_reason" : termination_reason,
+            "final_alt"          : float(alt_new),
+            "final_vz"           : float(V_z_new),
         }
 
         return self.state, reward, terminated, truncated, info
@@ -326,11 +348,12 @@ class VRSEnv(gym.Env):
             return "RECOVER"
 
     # =============================================
-    # _compute_reward(): 보상 계산
+    # _compute_reward(): 보상 계산, 종료 사유를 결정하는 곳 
     # =============================================
     def _compute_reward(self, V_z, alt, T_norm, vrs_ratio, zone, alt_prev=None):
-        reward     = 0.0
-        terminated = False
+        reward             = 0.0
+        terminated         = False
+        termination_reason = None
 
         # ----------------------
         # 1. 하강 진행 보상
@@ -342,33 +365,45 @@ class VRSEnv(gym.Env):
             reward  += alt_drop * 1.0
 
         # ----------------------
-        # 2. VRS 패널티 (이차 함수)
+        # 1-1. 시간 페널티
+        # 매 스텝마다 작은 음수 보상 → 빨리 착지할수록 누적 손실 줄어듦
+        # 6000스텝 timeout 시 약 -60 / 착지 보너스 +500 대비 충분히 작음
+        # 추락(-100)이 timeout(-35~-60)보다 여전히 나쁘므로 추락 유도 위험 없음
+        # ----------------------
+        if self.use_time_penalty:
+            reward -= 0.01
+
+        # ----------------------
+        # 2. VRS 패널티 (이차 함수) — use_vrs_penalty=True일 때만
         # 비율이 높아질수록 급격히 강해짐 → 깊은 VRS 진입 강력 억제
         # ratio=0.6: -0.3/스텝, ratio=1.0: -7.5/스텝, ratio=1.5: -30/스텝
         # ----------------------
-        if vrs_ratio >= 0.5:
+        if self.use_vrs_penalty and vrs_ratio >= 0.5:
             reward -= (vrs_ratio - 0.5) ** 2 * 30.0
 
         # ----------------------
-        # 3. 착지 성공
+        # 3. 종료 조건 (elif로 우선순위 명시: 착지 > 추락 > 고도초과)
+        # 현재 파라미터상 세 조건은 수학적으로 겹치지 않으나,
+        # 미래 파라미터 변경 시 착지를 최우선으로 판정하기 위해 elif 사용
         # ----------------------
         if alt <= 1.0 and V_z <= 2.0:
-            reward += 500.0
-            terminated = True
+            reward            += 500.0
+            terminated         = True
+            termination_reason = "landed"
+            # 착륙 품질 tier 보너스 (부드러울수록 누적 가산)
+            if V_z <= 1.5: reward += 100.0   # Tier 1
+            if V_z <= 1.0: reward += 100.0   # Tier 2
+            if V_z <= 0.5: reward += 100.0   # Tier 3
 
-        # ----------------------
-        # 4. 추락 (빠른 속도로 지면 충돌)
-        # ----------------------
-        if alt <= 0.0 and V_z > self.V_z_crash:
-            reward -= 100.0
-            terminated = True
+        elif alt <= 0.0 and V_z > self.V_z_crash:
+            reward            -= 100.0
+            terminated         = True
+            termination_reason = "crash"
 
-        # ----------------------
-        # 5. 고도 초과
-        # ----------------------
-        if alt >= self.alt_max:
-            reward -= 50.0
-            terminated = True
+        elif alt >= self.alt_max:
+            reward            -= 50.0
+            terminated         = True
+            termination_reason = "altitude_exceeded"
 
         # ----------------------
         # NaN/inf 안전장치
@@ -379,9 +414,9 @@ class VRSEnv(gym.Env):
                   f"vrs_ratio={vrs_ratio} zone={zone} raw_reward={reward}")
             reward = -100.0
 
-        reward = float(np.clip(reward, -200.0, 600.0))
+        reward = float(np.clip(reward, -200.0, 900.0))
 
-        return reward, terminated
+        return reward, terminated, termination_reason
 
     # =============================================
     # _safe_obs(): 관측값 NaN/inf 안전 클리핑

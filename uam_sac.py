@@ -454,7 +454,7 @@ def train(
                 # ----------------------------------------
                 if use_marking and markings is not None:
                     zone_before = env._ontology(obs[1], obs[3])
-                    if zone_before == "CAUTION":
+                    if zone_before in ("SAFE", "CAUTION"):  # SAFE 후반부(ratio≈0.4)도 포함 — 거리 조건이 2차 필터로 좁혀줌
                         reward += get_uam_bonus(obs, markings, marking_threshold, marking_bonus)
 
                 # 버퍼에 경험 저장 (부트스트랩 차단은 진짜 종료(terminated)일 때만)

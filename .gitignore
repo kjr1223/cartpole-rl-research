@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 *.log
 *.pid
+*.txt
 
 # 체크포인트 (대용량 바이너리)
 *.pth

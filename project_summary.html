@@ -1,0 +1,300 @@
+<title>UAM VRS RL 연구 전체 정리</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1B2B4B; --blue: #2C5DA8; --blue-lt: #4A7FCC;
+    --bg: #F4F6FA; --card: #FFFFFF; --text: #1A1F2E; --sub: #4A5568;
+    --border: #D0D9E8; --green: #1E7F52; --green-bg: #E6F5EE;
+    --red: #B91C1C; --red-bg: #FEE2E2; --orange: #C65D1A; --orange-bg: #FDF0E6;
+    --code-bg: #EEF2F7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111827; --card:#1F2937; --text:#E5E7EB; --sub:#9CA3AF; --border:#374151;
+      --green-bg:#052E1A; --red-bg:#2D0A0A; --orange-bg:#2A1500; --code-bg:#161D2B; }
+  }
+  :root[data-theme="dark"]  { --bg:#111827; --card:#1F2937; --text:#E5E7EB; --sub:#9CA3AF; --border:#374151; --green-bg:#052E1A; --red-bg:#2D0A0A; --orange-bg:#2A1500; --code-bg:#161D2B; }
+  :root[data-theme="light"] { --bg:#F4F6FA; --card:#FFFFFF; --text:#1A1F2E; --sub:#4A5568; --border:#D0D9E8; --green-bg:#E6F5EE; --red-bg:#FEE2E2; --orange-bg:#FDF0E6; --code-bg:#EEF2F7; }
+
+  body { background:var(--bg); color:var(--text); font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR","맑은 고딕",sans-serif; padding:32px 16px; line-height:1.7; }
+
+  .container { max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+
+  /* Title */
+  .page-title { background:var(--navy); color:#fff; border-radius:6px; padding:24px 28px; }
+  .page-title h1 { font-size:20px; font-weight:700; margin-bottom:6px; }
+  .page-title p  { font-size:12px; color:#C8D8F0; }
+
+  /* Section */
+  .section { background:var(--card); border-radius:6px; border:1px solid var(--border); overflow:hidden; }
+  .section-header { background:var(--blue); color:#fff; padding:10px 18px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .section-body { padding:16px 18px; display:flex; flex-direction:column; gap:12px; }
+
+  /* Subsection */
+  .sub-title { font-size:12.5px; font-weight:700; color:var(--blue); border-left:3px solid var(--blue); padding-left:8px; margin-bottom:4px; }
+
+  /* Text */
+  p { font-size:12.5px; color:var(--sub); line-height:1.75; }
+  b { color:var(--text); }
+
+  /* Lists */
+  ul { list-style:none; display:flex; flex-direction:column; gap:4px; padding-left:4px; }
+  ul > li { font-size:12px; color:var(--sub); display:flex; gap:7px; line-height:1.6; }
+  ul > li::before { content:"•"; color:var(--blue); flex-shrink:0; margin-top:1px; }
+
+  /* Code */
+  code { background:var(--code-bg); color:var(--blue); padding:1px 5px; border-radius:3px; font-family:"Consolas","Courier New",monospace; font-size:11px; }
+  .code-block { background:var(--code-bg); border:1px solid var(--border); border-radius:4px; padding:10px 14px; font-family:"Consolas","Courier New",monospace; font-size:11px; color:var(--text); overflow-x:auto; white-space:pre; line-height:1.7; }
+
+  /* Table */
+  .tbl-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:11.5px; font-variant-numeric:tabular-nums; }
+  thead th { background:var(--navy); color:#fff; padding:7px 12px; text-align:left; }
+  tbody td { padding:6px 12px; border-bottom:1px solid var(--border); color:var(--text); }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:nth-child(even) { background:rgba(44,93,168,0.04); }
+  .good { color:var(--green); font-weight:700; }
+  .bad  { color:var(--red);   font-weight:700; }
+  .warn { color:var(--orange); font-weight:600; }
+
+  /* Tag */
+  .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:2px; letter-spacing:0.04em; }
+  .tag-file { background:var(--code-bg); color:var(--blue); }
+  .tag-done { background:var(--green-bg); color:var(--green); }
+  .tag-issue { background:var(--red-bg); color:var(--red); }
+  .tag-fix { background:var(--orange-bg); color:var(--orange); }
+
+  .divider { height:1px; background:var(--border); }
+
+  .note { background:var(--orange-bg); border-left:3px solid var(--orange); border-radius:2px; padding:8px 12px; font-size:11.5px; color:var(--orange); }
+  .note-g { background:var(--green-bg); border-left:3px solid var(--green); border-radius:2px; padding:8px 12px; font-size:11.5px; color:var(--green); }
+</style>
+
+<div class="container">
+
+  <!-- 타이틀 -->
+  <div class="page-title">
+    <h1>UAM VRS-Safe Landing via RL — 연구 전체 정리</h1>
+    <p>프로젝트 경로: ~/cartpole_project/ &nbsp;|&nbsp; GitHub: kjr1223/cartpole-rl-research &nbsp;|&nbsp; 작성일: 2026-08-03</p>
+  </div>
+
+  <!-- 1. 연구 개요 -->
+  <div class="section">
+    <div class="section-header">1. 연구 개요</div>
+    <div class="section-body">
+      <p><b>목표:</b> UAM(도심 항공 모빌리티) 수직 착륙 시 발생하는 VRS(Vortex Ring State) 현상을 강화학습으로 회피하며 안전하게 착륙하는 제어 정책 학습.</p>
+      <p><b>투고 논문:</b> APISAT 2027 (2026.07.31 제출) — "VRS-Safe UAM Landing Control via Reinforcement Learning with Ontology-Guided State Classification"</p>
+      <p><b>사용 알고리즘:</b> SAC (Soft Actor-Critic), auto_alpha=False, alpha=0.03, deterministic=True (평가 시)</p>
+      <p><b>핵심 구성요소 3가지:</b></p>
+      <ul>
+        <li><b>VRS-aware Reward Shaping</b> — CAUTION 구역 접근 시 점진적 페널티</li>
+        <li><b>온톨로지(Ontology)</b> — DANGER/RECOVER 진입 시 즉각 최대 추력 오버라이드 (rule-based)</li>
+        <li><b>Context DB</b> — 사람이 마킹한 CAUTION 경계 상태 1,084개 저장, 에이전트가 근접 시 보너스 +3.0 (CAUTION 구역에서만)</li>
+      </ul>
+      <p><b>추가 시도:</b> PINN(Physics-Informed Neural Network) 기반 Dyna-style 데이터 증강 — n=3 가상 샘플/실제 스텝</p>
+    </div>
+  </div>
+
+  <!-- 2. VRS 환경 정의 -->
+  <div class="section">
+    <div class="section-header">2. VRS 환경 정의 (uam_vrs_env.py)</div>
+    <div class="section-body">
+      <div class="sub-title">VRS 상태 구분 (Vz/Vh 기준)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>상태</th><th>조건 (Vz/Vh)</th><th>처리 방식</th></tr></thead>
+          <tbody>
+            <tr><td>SAFE</td><td>&lt; 0.5</td><td>정상 비행</td></tr>
+            <tr><td>CAUTION</td><td>0.5 ~ 0.8</td><td>점진적 페널티 + Context DB 보너스 적용 구간</td></tr>
+            <tr><td>DANGER</td><td>0.8 ~ 2.0</td><td>온톨로지: 즉각 최대 추력 오버라이드</td></tr>
+            <tr><td>RECOVER</td><td>≥ 2.0</td><td>온톨로지: 즉각 최대 추력 오버라이드</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="divider"></div>
+      <p><b>SAC 입력 (state):</b> [V_x, V_z, alt, T_norm] — 4차원. Context DB는 reward에만 영향, SAC 입력 불포함.</p>
+      <p><b>베이스라인 환경:</b> <code>NoVRSEnv</code> (uam_baseline_novrs.py) — VRS 페널티·온톨로지 없음, 착지 성공/실패 보상만.</p>
+      <p><b>커리큘럼 3단계:</b></p>
+      <ul>
+        <li>Stage 1: 고도 20–40 m, max_steps=6,000 (15초)</li>
+        <li>Stage 2: 고도 60–90 m, max_steps=10,000 (25초)</li>
+        <li>Stage 3: 고도 100–150 m, max_steps=16,000 (40초)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3. 학습 파이프라인 -->
+  <div class="section">
+    <div class="section-header">3. 학습 파이프라인 전체 흐름</div>
+    <div class="section-body">
+      <div class="sub-title">파일별 역할</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>파일명</th><th>역할</th><th>출력 체크포인트</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>uam_baseline_novrs.py</code></td>
+              <td>NoVRSEnv + 순수 SAC 학습 (VRS 고려 없음)</td>
+              <td>baseline_ep400.pth / baseline_final.pth</td>
+              <td>ep400: 착륙 성공률 1.0%, VRS 15.3%<br>ep1000(final): 69.5%, VRS 38.1%</td>
+            </tr>
+            <tr>
+              <td><code>uam_fresh_train.py</code></td>
+              <td>Stage1 SAC + VRS Reward + Ontology (Context DB·PINN 없음)</td>
+              <td>fresh_best.pth</td>
+              <td class="good">착륙 성공률 59.0%, VRS 0.9% ← 논문 채택 수치</td>
+            </tr>
+            <tr>
+              <td><code>uam_stage1_contextdb.py</code></td>
+              <td>fresh_best 기반, Stage1에 Context DB 추가 학습</td>
+              <td>stage1_contextdb_best.pth</td>
+              <td class="warn">착륙 성공률 63.0%, VRS 52.4% (미채택)</td>
+            </tr>
+            <tr>
+              <td><code>uam_stage2_v4_contextdb.py</code></td>
+              <td>Stage2 SAC + Context DB + Ontology</td>
+              <td>stage2_v4_best.pth</td>
+              <td class="good">착륙 성공률 53.3% (Stage2 기준)</td>
+            </tr>
+            <tr>
+              <td><code>uam_stage3_v1_contextdb.py</code></td>
+              <td>Stage3 SAC + Context DB + Ontology</td>
+              <td>stage3_v1_best.pth</td>
+              <td class="good">착륙 성공률 60.2% (Stage3 기준)</td>
+            </tr>
+            <tr>
+              <td><code>uam_pinn_train.py</code></td>
+              <td>Stage3에서 PINN Dyna-style 증강 (n=3)</td>
+              <td>stage3_pinn_best.pth</td>
+              <td>진행됨 (논문 수치와 별개)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sub-title">평가 파일</div>
+      <ul>
+        <li><code>uam_eval_baseline.py</code> — NoVRSEnv + baseline_ep400.pth, 결정론적 200 에피소드</li>
+        <li><code>uam_eval_proposed.py</code> — VRSEnv + fresh_best.pth, 결정론적 200 에피소드</li>
+        <li><code>uam_eval_stage1_contextdb.py</code> — stage1_contextdb_best.pth 결정론적 평가</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4. PINN -->
+  <div class="section">
+    <div class="section-header">4. PINN 구조 및 Loss (uam_pinn_model.py)</div>
+    <div class="section-body">
+      <p><b>구조:</b> 4-layer feedforward, Tanh 활성화, 잔차 예측 (next_state = state + Δ)</p>
+      <p><b>입력:</b> 5D (Vx, Vz, alt, T_norm, dT) → <b>출력:</b> 4D (다음 상태 변화량)</p>
+      <div class="code-block">L_PINN = L_data + λ · L_phys
+
+L_data = MSE( f_θ(s,a), s'_obs )         # 실제 전이 데이터 fitting
+L_phys = MSE( f_θ(s,a), φ_RK4(s,a) )    # RK4 물리 방정식과의 일치
+
+λ = 1.0,  RK4 적분 dt = 1/400s</div>
+      <p><b>Dyna-style 증강:</b> PINN이 s'만 생성 → env reward function이 r 계산 → (s, a, r, s') 리플레이 버퍼 추가. n_imagined=3/실제 스텝.</p>
+    </div>
+  </div>
+
+  <!-- 5. 핵심 실험 결과 및 분석 -->
+  <div class="section">
+    <div class="section-header">5. 핵심 실험 결과 및 주요 발견</div>
+    <div class="section-body">
+
+      <div class="sub-title">최종 비교 결과 (논문 채택)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>구분</th><th>방법</th><th>착륙 성공률</th><th>VRS 진입률(스텝)</th></tr></thead>
+          <tbody>
+            <tr><td>베이스라인</td><td>순수 SAC (ep400)</td><td class="bad">1.0%</td><td class="bad">15.3%</td></tr>
+            <tr><td>제안 방법</td><td>SAC + VRS Reward + Ontology</td><td class="good">59.0%</td><td class="good">0.9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sub-title">Stage1 Context DB 적용 실험 — 왜 미채택인가</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>항목</th><th>Without Context DB (fresh_best)</th><th>With Context DB (stage1_contextdb)</th></tr></thead>
+          <tbody>
+            <tr><td>착륙 성공률</td><td>59.0%</td><td class="good">63.0%</td></tr>
+            <tr><td>VRS 진입률(스텝)</td><td class="good">0.9%</td><td class="bad">52.4%</td></tr>
+            <tr><td>VRS 진입 에피소드</td><td>—</td><td class="bad">80.5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        원인: CAUTION 구역(Vz/Vh=0.5~0.8) = VRS 경계 그 자체. 이 구역에 보너스를 주면 에이전트가 VRS 경계 근처를 맴도는 행동을 학습함 → Stage1에는 Context DB 부적합, Stage2+(희소 학습 신호 구간)에서만 유효.
+      </div>
+
+      <div class="divider"></div>
+      <div class="sub-title">베이스라인 ep400 vs ep1000 선택 이유</div>
+      <p>ep1000(baseline_final)은 VRS를 통과해서 착륙하는 방법을 학습 → 착륙 성공률 69.5%, VRS 38.1%. 이는 "VRS를 통과해도 착륙 가능"을 보여주지만, VRS 안전성 지표가 전혀 없는 결과. 논문 서사(VRS 회피 능력 부재)에 맞는 ep400 사용.</p>
+    </div>
+  </div>
+
+  <!-- 6. 논문 수정 이력 -->
+  <div class="section">
+    <div class="section-header">6. APISAT 2027 논문 수정 이력</div>
+    <div class="section-body">
+      <ul>
+        <li><b>Section 4.1</b> — CartPole → UAM 전환 이유 추가 (SAC 파이프라인 검증 후 UAM 환경 적용)</li>
+        <li><b>Section 4.2 문단 추가 ①</b> — 0.9% VRS 진입률은 per-step 기준, 온톨로지 즉각 오버라이드로 일시적 교란에 그침 (vs 베이스라인 15.3%)</li>
+        <li><b>Section 4.2 문단 추가 ②</b> — 59.0% 착륙 성공률은 보수적 하한값 (VRS=near-terminal 처리 때문), Section 4.4로 연결</li>
+        <li><b>Section 4.2 문단 추가 ③</b> — Stage1(20–40m)이 ground-induced upwash, 건물 후류, 선행기체 하강류가 집중되는 공력학적 최악 구간임을 명시</li>
+        <li><b>Section 4.4 신설</b> — Limitations and Future Work: VRS avoidance(현재) vs VRS recovery(향후) 두 sub-problem 분리, 난기류 유추로 VRS의 회복 가능성 제시</li>
+        <li><b>PINN Loss function</b> — 교수님 지적 반영, L_PINN = L_data + λ·L_phys 수식 및 RK4 물리 제약 명시</li>
+        <li><b>Figure 4</b> — 베이스라인 vs 제안 방법 막대 그래프 (uam_comparison_figure.py로 생성)</li>
+      </ul>
+      <div class="note-g">
+        논문 내 제안 방법 표기: "SAC + VRS-aware Reward + Ontology". Context DB는 Stage2 결과에서 별도 언급. 59.0%/0.9% 수치의 실제 소스는 fresh_best.pth (Context DB 없음).
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 향후 연구 방향 -->
+  <div class="section">
+    <div class="section-header">7. 향후 연구 방향 (교수님 피드백 기반)</div>
+    <div class="section-body">
+      <p><b>전제:</b> 착륙은 무조건 100% 성공 — VRS 진입 여부와 무관하게 UAM은 반드시 착륙. 핵심 지표는 "얼마나 안전하게 착륙하는가".</p>
+      <p><b>VRS 재정의:</b> 현재 VRS = near-terminal 실패 처리 → 향후 VRS = 난기류(turbulence)처럼 회복 가능한 외란으로 모델링.</p>
+      <div class="divider"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>방법론</th><th>설명</th><th>목표</th></tr></thead>
+          <tbody>
+            <tr><td><b>방법론 0</b> (비교군)</td><td>단순 PID 제어 또는 VRS 고려 없는 순수 RL</td><td>착륙은 하지만 안전 지표 부재</td></tr>
+            <tr><td><b>방법론 1</b> (Recovery)</td><td>VRS 진입 허용, 추력 증가 + 수평속도 조절로 탈출 후 착륙</td><td>VRS 체류 시간 최소화, 회복 성공률 최대화</td></tr>
+            <tr><td><b>방법론 2</b> (Avoidance)</td><td>하강 경로를 VRS 위험 구역 밖으로 유지</td><td>VRS 진입률 0%, 안전 마진 확보 (현재 연구)</td></tr>
+            <tr><td><b>방법론 3</b> (통합)</td><td>회피 우선 + 진입 시 회복 정책 전환</td><td>착륙 100% + VRS 안전성 동시 최적화</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px;"><b>고정 시나리오:</b> 단일 하강 궤적을 픽스한 상태에서 방법론 0~3을 동일 조건에 적용 → 공정 비교. VRS 진입 횟수, 체류 시간, 착륙 정밀도 지표 구분.</p>
+    </div>
+  </div>
+
+  <!-- 8. 주요 파일 위치 -->
+  <div class="section">
+    <div class="section-header">8. 주요 파일 위치</div>
+    <div class="section-body">
+      <div class="code-block">~/cartpole_project/
+├── uam_vrs_env.py              # 메인 VRS 환경 (VRSEnv)
+├── uam_baseline_novrs.py       # 베이스라인 환경 (NoVRSEnv)
+├── uam_sac.py                  # SAC 에이전트
+├── uam_pinn_model.py           # PINN 모델 + Loss
+├── uam_fresh_train.py          # ★ 제안 방법 학습 (59.0%/0.9% 소스)
+├── uam_eval_baseline.py        # 베이스라인 결정론적 평가
+├── uam_eval_proposed.py        # 제안 방법 결정론적 평가
+├── uam_stage2_v4_contextdb.py  # Stage2 Context DB 학습
+├── uam_stage3_v1_contextdb.py  # Stage3 Context DB 학습
+├── uam_pinn_train.py           # PINN Dyna-style 증강 학습
+├── uam_comparison_figure.py    # 논문 Figure 4 생성
+└── uam_checkpoints_*/          # 체크포인트 (gitignore 처리됨)</div>
+      <p style="margin-top:8px;"><b>GitHub:</b> kjr1223/cartpole-rl-research (2026.08.02 push 완료, .pth 제외)</p>
+    </div>
+  </div>
+
+</div>

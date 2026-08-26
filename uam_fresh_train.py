@@ -1,22 +1,25 @@
 """
 uam_fresh_train.py
 ==================
-처음부터 다시 시작하는 순수 SAC 학습
+처음부터 다시 시작하는 SAC + 온톨로지 학습 (시간 페널티 추가)
 
-[교수님 피드백 반영]
+[구성]
   - 기존 체크포인트 없음 → 랜덤 초기화 (편향 제거)
-  - PINN 없음, Reward Shaping 없음 → 순수 SAC
-  - 보상 함수 완전 재설계:
-      생존 보상 제거 / 하강 진행 보상 / VRS 이차 패널티 / 착지 보너스
+  - 온톨로지 오버라이드 활성: DANGER/RECOVER 구간에서 dT=1.0 강제 (uam_vrs_env.py)
+  - PINN 없음
 
-[새 보상 함수 원칙]
-  생존(버티기)에 아무 이득 없음
-  내려갈수록 이득 (+alt_drop × 1.0)
-  VRS 깊이 들어갈수록 급격히 손해 (-(ratio-0.5)² × 30)
-  착지 = 가장 큰 보상 (+500)
+[보상 함수]
+  하강 진행  : +alt_drop × 1.0 (내려간 거리에 비례)
+  VRS 패널티 : -(ratio-0.5)² × 30  (ratio ≥ 0.5 구간)
+  시간 페널티: -0.01 / step  (빠른 착지 인센티브, timeout 억제)
+  착지 보너스: +500
+
+[baseline 비교 대상]
+  baseline_no_time_penalty.pth: SAC + 온톨로지 + alt_drop + VRS penalty (시간 페널티 없음)
+  이 스크립트 결과(fresh_best.pth): 위에 시간 페널티만 추가 — 차이가 딱 하나라 비교 유효
 
 [설정]
-  고도: 20~40m (Stage 1 — 물리적으로 착지 가능한 범위)
+  고도: 20~40m (Stage 1)
   max_steps: 6,000
   alpha: 0.03, buffer: 100k, episodes: 1,000
 """
@@ -66,8 +69,8 @@ def main():
     log(f"[Device] {device}")
     log(f"[Init] 랜덤 초기화 (기존 체크포인트 미사용)")
     log(f"\n{'='*55}")
-    log(f"순수 SAC 재학습 (처음부터)")
-    log(f"  보상: 생존보상 없음 | 하강(+alt_drop) | VRS 이차패널티 | 착지+500")
+    log(f"SAC + 온톨로지 재학습 (처음부터, 시간 페널티 추가)")
+    log(f"  보상: 하강(+alt_drop) | VRS 이차패널티 | 시간페널티(-0.01/step) | 착지+500")
     log(f"  고도: {ALT_LOW}~{ALT_HIGH}m | max_steps: {MAX_STEPS} ({MAX_STEPS*0.0025:.1f}초)")
     log(f"  에피소드: {EPISODES} | buffer: {BUFFER_SIZE:,} | alpha: {FIXED_ALPHA}")
     log(f"{'='*55}\n")
@@ -94,7 +97,7 @@ def main():
             ep_reward += reward
             total_steps += 1
 
-            if terminated and next_obs[1] <= 2.0 and next_obs[2] <= 1.0:
+            if info.get('termination_reason') == 'landed':
                 landed = True
 
             if len(agent.buffer) >= 256:
