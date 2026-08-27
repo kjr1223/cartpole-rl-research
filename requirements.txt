@@ -1,5 +1,6 @@
-# torch CUDA 13.0 버전 별도 설치 필요:
-# pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu130
+# torch는 각 환경의 CUDA 버전에 맞춰 별도 설치할 것
+# CUDA 13.0에서 검증된 버전: pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu130
+# 설치 확인: python3 -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 numpy==2.4.4
 gymnasium==1.3.0
 scipy==1.17.1
